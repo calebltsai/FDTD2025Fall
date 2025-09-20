@@ -5,7 +5,7 @@
 #include <cmath>
 
 
-std::vector<double> altComp(std::vector<std::complex<double>>& data);
+std::vector<double> altComp(std::vector<std::complex<double>>& data, int size);
 
 /*
 write a function that a given 1D array of complex values and
@@ -23,7 +23,7 @@ void four1(std::vector<double>& data, const int n, const int isign);
 
 
 /*
-write function to find peaks in each FFT of 
+write function to find peaks in each FFT 
 */
 
 

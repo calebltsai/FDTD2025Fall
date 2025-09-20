@@ -117,7 +117,7 @@ int main() {
 			}
 
 			// source pulse from center
-			Ez[ib/2][jb/2] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ib/2][jb/2];
+			Ez[ib/2][jb/2] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::sin(omega*dt*(t-100)) + Ez[ib/2][jb/2];
 
 			// Hy, Hx
 			for (int x=0; x <= ib-1; x++) {
@@ -139,9 +139,8 @@ int main() {
 			eobs.push_back(Ez[ib/4][jb/4]);
 		}
 
-		std::vector<double> transform = altComp(eobs);
-
-		four1(transform, totaltime, 1);
+		std::vector<double> transform = altComp(eobs, totaltime);
+		four1(altComp(eobs, totaltime), totaltime, 1);
 
 		// function: take abs val of tuple complex coords in the transform, then pass back to bandstructure
 		std::vector<double> temp(totaltime*2);

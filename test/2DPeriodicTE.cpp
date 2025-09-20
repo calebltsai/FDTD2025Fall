@@ -7,11 +7,11 @@
 #include <iostream>
 
 
-std::vector<double> altComp(std::vector<std::complex<double>>& data) {
-	std::vector<double> ret(data.size()*2);
-	for (unsigned idx=0;idx<data.size();idx++) {
-		ret[2*idx] = data.at(idx).real();
-		ret[2*idx+1] = data.at(idx).imag();
+std::vector<double> altComp(std::vector<std::complex<double>>& data, int size) {
+	std::vector<double> ret;
+	for (int idx=0;idx<size;idx++) {
+		ret.push_back(data.at(idx).real());
+		ret.push_back(data.at(idx).imag());
 	}
 	return ret;
 }
@@ -86,13 +86,14 @@ void writeToFile(std::vector<std::vector<double>>& data) {
 	if (outFile.is_open()) {
 		for (unsigned i=0; i < data.size();i++) {
 			for (unsigned j=0; j < data[0].size();j++) {
-				outFile << data[i][j] << " ";
+				outFile << data[i][j];
+				if (j < data[i].size() - 1) {
+					outFile << ", ";
+				}
 			}
 			outFile << std::endl;
 		}
 		outFile.close();
 		std::cout << "Sucessful write to file 2DSpectrum.csv" << std::endl;
-	} else {
-		std::cout << "Error in opening file 2DSpectrum.csv" << std::endl;
-	}
+	} else std::cout << "Error in opening file 2DSpectrum.csv" << std::endl;
 }
