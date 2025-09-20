@@ -7,6 +7,23 @@
 #include "2DPeriodicTE.h"
 #include "2DPeriodicTE.cpp"
 
+/* 
+practice using heap memory for temporary variables?
+does anything make more sense for dynamic memory?
+
+splitting into functions (and classes?) for organizing:
+
+complex operations?
+matrix operations?
+time step
+setting boundaries/pml/tfsf
+fft
+
+valgrind (using and managing memory through pointers, etc)
+pointer of array<complex> with dimension of rows->pointing to column element-> which is a pointer to complex value
+ */
+
+
 // start by defining constants
 
 double pi = 3.14159265358979323846;
