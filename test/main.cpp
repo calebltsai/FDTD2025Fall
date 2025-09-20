@@ -26,9 +26,9 @@ double dt = courantfactor*dx/c;
 double dy = dx;
 
 // define grid boundaries and simulation parameters
-const int ib = 64;
-const int jb = 64;
-const int totaltime = std::pow(2,10+4);
+const unsigned ib = 64;
+const unsigned jb = 64;
+const unsigned totaltime = std::pow(2,10+4);
 
 std::complex<double> Ez[ib+1][jb+1];
 std::complex<double> Hy[ib+1][jb+1];
@@ -43,32 +43,32 @@ unsigned n2 = 2;
 
 
 // setting brillouin zone and traversal
-const int range = 500;
-const int numK = 10;
+const unsigned range = 500;
+const unsigned numK = 10;
 
 double bandstructure[numK][range];
 
 int main() {   
 	// setting dielectrics
-	for (int x=0;x<=ib+1;x++){
-		for (int y=0;y<=jb+1;y++){
+	for (unsigned x=0;x<=ib+1;x++){
+		for (unsigned y=0;y<=jb+1;y++){
 			if ( (x-ib/2)*(x-ib/2)+(y-ib/2)*(y-ib/2) >= (ib/4)*(ib/4) ) eps[x][y] = epsilon*n2*n2;
 			else eps[x][y] = epsilon*n1*n1;
 		}
 	}
-    
  
-    for (int k=0; k < 3*(numK+1); k++){
-		for (int t=0; t < totaltime ;t++){
-			for (int x=0; x < ib; x++) {
-				for (int y=0; y < jb; y++) {
+ 
+ for (unsigned k=0; k < 3*(numK+1); k++) {
+		for (unsigned t=0; t < totaltime; t++) {
+			for (unsigned x=0; x < ib; x++) {
+				for (unsigned y=0; y < jb; y++) {
 					
 				}
 			}
 		}
 		std::cout << k << std::endl;
 	}
-
+	
 /*
 % constants
 
@@ -123,6 +123,6 @@ for k=1:(numK+1)*3
 end
 
 */
-	
+
 	return 0;
 }
