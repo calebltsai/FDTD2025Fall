@@ -84,7 +84,7 @@ write a function that given reference to 2D array of doubles,
 writes to csv file for matlab in preparation for pcolor
 */
 void writeToFile(std::vector<std::vector<double>>& data) {
-	std::ofstream outFile("output/2DSpectrum.csv");
+	std::ofstream outFile("output/2DTESpectrum.csv");
 	if (outFile.is_open()) {
 		for (unsigned i=0; i < data.size();i++) {
 			for (unsigned j=0; j < data[0].size();j++) {
