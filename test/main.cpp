@@ -26,7 +26,7 @@ pointer of array<complex> with dimension of rows->pointing to column element-> w
 
 // start by defining constants
 
-double pi = 3.14159265358979323846;
+const double pi = 3.14159265358979323846;
 
 double c = 299792458;
 double mu = pi*4.0e-7;
@@ -84,12 +84,12 @@ int main() {
 	double kys[(numK+1)*3];
 
 	for (int idx=0; idx<numK+1; idx++) {
-		kxs[idx] = pi*ib*dx*idx/numK;
+		kxs[idx] = pi/(ib*dx)*idx/numK;
 		kys[idx] = 0;
-		kxs[idx+numK+1] = pi*ib*dx;
-		kys[idx+numK+1] = pi*jb*dy*idx/numK;
-		kxs[idx+2*(numK+1)] = pi*ib*dx*(numK-idx)/numK;
-		kys[idx+2*(numK+1)] = pi*jb*dy*(numK-idx)/numK;
+		kxs[idx+numK+1] = pi/(ib*dx);
+		kys[idx+numK+1] = pi/(jb*dy)*idx/numK;
+		kxs[idx+2*(numK+1)] = pi/(ib*dx)*(numK-idx)/numK;
+		kys[idx+2*(numK+1)] = pi/(jb*dy)*(numK-idx)/numK;
 	}
 
 
@@ -136,17 +136,17 @@ int main() {
 				Hx[idx][jb]=Hx[idx][0]*std::exp(std::complex<double>(0,-1)*kys[k]*std::complex<double>(jb,0)*dy);
 			}
 
-			eobs.push_back(Ez[ib/4][jb/4]);
+			eobs[t] = Ez[ib/4][jb/4];
 		}
 
-		std::vector<double> transform = altComp(eobs, totaltime);
-		four1(altComp(eobs, totaltime), totaltime, 1);
+		std::vector<double> transform = altComp(eobs);
+		four1(transform, totaltime, 1);
 
 		// function: take abs val of tuple complex coords in the transform, then pass back to bandstructure
-		std::vector<double> temp(totaltime*2);
+		std::vector<double> temp;
 		for (int idx = 0;idx<totaltime*2;idx+=2) {
 			// taking the norm of each pair of values in the array
-			temp[idx] = std::sqrt(transform.at(idx)*transform.at(idx)+transform.at(idx+1)*transform.at(idx+1));
+			temp.push_back(std::sqrt(transform.at(idx)*transform.at(idx)+transform.at(idx+1)*transform.at(idx+1)));
 		}
 
 		bandstructure[k] = temp;

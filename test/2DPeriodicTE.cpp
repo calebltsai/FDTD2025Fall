@@ -6,10 +6,11 @@
 #include <fstream>
 #include <iostream>
 
+const double PI = 3.14159265358979323846;
 
-std::vector<double> altComp(std::vector<std::complex<double>>& data, int size) {
+std::vector<double> altComp(std::vector<std::complex<double>>& data) {
 	std::vector<double> ret;
-	for (int idx=0;idx<size;idx++) {
+	for (unsigned idx=0;idx< data.size();idx++) {
 		ret.push_back(data.at(idx).real());
 		ret.push_back(data.at(idx).imag());
 	}
@@ -70,6 +71,7 @@ void four1(std::vector<double>& data, const int n, const int isign) {
 		mmax=istep;
 	}
 }
+
 
 /*
 write function to find peaks in each FFT, in the case youare not returning for pcolor
