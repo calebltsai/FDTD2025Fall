@@ -96,6 +96,6 @@ void writeToFile(std::vector<std::vector<double>>& data) {
 			outFile << std::endl;
 		}
 		outFile.close();
-		std::cout << "Sucessful write to file 2DSpectrum.csv" << std::endl;
-	} else std::cout << "Error in opening file 2DSpectrum.csv" << std::endl;
+		std::cout << "Sucessful write to file 2DTESpectrum.csv" << std::endl;
+	} else std::cout << "Error in opening file 2DTESpectrum.csv" << std::endl;
 }
