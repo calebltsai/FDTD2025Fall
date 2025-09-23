@@ -65,19 +65,15 @@ const int tmp = std::pow(2,10+4);
 std::vector<std::vector<double>> bandstructure((1+numK)*3, std::vector<double>(tmp));
 
 int main() {   
-	// setting dielectrics
+	// setting dielectrics and dimagnetics
 	for (int x=0;x<=ib;x++){
 		for (int y=0;y<=jb;y++){
+			mus[x][y] = mu;
 			if ( (x-ib/2)*(x-ib/2)+(y-ib/2)*(y-ib/2) <= (ib/4)*(ib/4) ) eps[x][y] = epsilon*n2*n2;
 			else eps[x][y] = epsilon*n1*n1;
 		}
 	}
-	// setting dimagnetics
-	for (int x=0;x<=ib;x++) {
-		for (int y=0;y<jb;y++) {
-			mus[x][y] = mu;
-		}
-	}
+
 
 	// begin analysis by iteration over reduced brillouin zone
  double kxs[(numK+1)*3];
@@ -117,7 +113,7 @@ int main() {
 			}
 
 			// source pulse from center
-			Ez[ib/2][jb/2] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::sin(omega*dt*(t-100)) + Ez[ib/2][jb/2];
+			Ez[ib/2][jb/2] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ib/2][jb/2];
 
 			// Hy, Hx
 			for (int x=0; x <= ib-1; x++) {
