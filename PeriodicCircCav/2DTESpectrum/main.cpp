@@ -8,24 +8,18 @@
 #include "2DPeriodicTE.cpp"
 
 /* 
-practice using heap memory for temporary variables?
-does anything make more sense for dynamic memory?
+practice using heap memory for temporary variables? (does anything make more sense as dynamic memory?)
 
 splitting into functions (and classes?) for organizing:
-
 complex operations?
 matrix operations?
 time step
 setting boundaries/pml/tfsf
-fft
 
 valgrind (using and managing memory through pointers, etc)
 pointer of array<complex> with dimension of rows->pointing to column element-> which is a pointer to complex value
  */
-
-
 // start by defining constants
-
 const double pi = 3.14159265358979323846;
 
 double c = 299792458;
@@ -59,7 +53,7 @@ int n1 = 1;
 int n2 = 2;
 
 // setting brillouin zone and traversal
-const int numK = 10;
+const int numK = 50;
 const int tmp = std::pow(2,10+4);
 
 std::vector<std::vector<double>> bandstructure((1+numK)*3, std::vector<double>(tmp));
@@ -69,6 +63,7 @@ int main() {
 	for (int x=0;x<=ib;x++){
 		for (int y=0;y<=jb;y++){
 			mus[x][y] = mu;
+			// normal/vacuum region outside (scattering obstacle)
 			if ( (x-ib/2)*(x-ib/2)+(y-ib/2)*(y-ib/2) <= (ib/4)*(ib/4) ) eps[x][y] = epsilon*n2*n2;
 			else eps[x][y] = epsilon*n1*n1;
 		}
@@ -95,6 +90,10 @@ int main() {
 		const int totaltime = std::pow(2,10+4);
 		std::vector<std::complex<double>> eobs(totaltime);
 
+		std::complex<double> Hz[ib+1][jb+1] = {std::complex<double>(0,0)};
+		std::complex<double> Ey[ib+1][jb+1] = {std::complex<double>(0,0)};
+		std::complex<double> Ex[ib+1][jb+1] = {std::complex<double>(0,0)};
+
 		for (int t=0; t < totaltime; t++) {
 			
 			// Ez
@@ -113,8 +112,7 @@ int main() {
 			}
 
 			// source pulse from center
-			Ez[ib/2][jb/2] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ib/2][jb/2];
-
+			Ez[ib/2+5][jb/2+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ib/2+5][jb/2+5];
 			// Hy, Hx
 			for (int x=0; x <= ib-1; x++) {
 				for (int y=0; y <= jb-1; y++) {
