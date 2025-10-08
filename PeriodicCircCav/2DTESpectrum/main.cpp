@@ -8,21 +8,19 @@
 #include "2DPeriodicTE.cpp"
 
 /* 
-practice using heap memory for temporary variables?
-does anything make more sense for dynamic memory?
+first define parameters of geomtery
+then define parameters for A,r ratio
+find symmetric points and source points
 
-splitting into functions (and classes?) for organizing:
+bloch boundary conditions only on x,y edge
 
-complex operations?
-matrix operations?
-time step
-setting boundaries/pml/tfsf
-fft
+write out kspace reciprocal lattice
+*/
 
-valgrind (using and managing memory through pointers, etc)
-pointer of array<complex> with dimension of rows->pointing to column element-> which is a pointer to complex value
- */
+/* 
+CHANGE!!:
 
+*/
 
 // start by defining constants
 
@@ -46,6 +44,12 @@ double dy = dx;
 const int ib = 32;
 const int jb = 32;
 
+/*
+state symmetry points for hexagonal unit lattice (take jb divisible by 12)
+ib divisible by at least 2
++1 for ghost point will be resolved independently
+*/
+
 // initialize to complex value zero
 std::complex<double> Ez[ib+1][jb+1] = {std::complex<double>(0,0)};
 std::complex<double> Hy[ib+1][jb+1] = {std::complex<double>(0,0)};
@@ -54,7 +58,7 @@ std::complex<double> Hx[ib+1][jb+1] = {std::complex<double>(0,0)};
 double eps[ib+1][ib+1];
 double mus[ib+1][ib+1];
 
-// index of refraction for n1 outside, n2 inside
+// index of refraction for n1 normal, n2 cylindrical dielectric
 int n1 = 1;
 int n2 = 2;
 
@@ -76,6 +80,8 @@ int main() {
 
 
 	// begin analysis by iteration over reduced brillouin zone
+	// NEW HEXAGONAL brillouin zone
+
  double kxs[(numK+1)*3];
 	double kys[(numK+1)*3];
 
