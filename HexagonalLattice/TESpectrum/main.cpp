@@ -46,12 +46,12 @@ const int r0 = 15;
 const int ic[] = {ib/2, 1, 1, ib, ib};
 const int jc[] = {jb/2, 1, jb, 1, jb};
 
-const int a1;
-const int a2;
-const int a3;
-const int a4;
-const int a5;
-const int a6;
+const int a1 = 0;
+const int a2 = 0;
+const int a3 = 0;
+const int a4 = 0;
+const int a5 = 0;
+const int a6 = 0;
 
 // initialize to complex value zero
 std::complex<double> Ez[ib+1][jb+1] = {std::complex<double>(0,0)};
@@ -66,10 +66,10 @@ int n1 = 1;
 int n2 = 2;
 
 // setting brillouin zone and traversal
-const int numK = 10;
+const int numK = 40;
 const int tmp = std::pow(2,10+4);
 
-std::vector<std::vector<double>> bandstructure((1+numK)*3, std::vector<double>(tmp));
+std::vector<std::vector<double>> bandstructure(numK*3, std::vector<double>(tmp));
 
 int main() {   
 	// setting dielectrics and dimagnetics
@@ -85,19 +85,19 @@ int main() {
 	}
 
 	// begin analysis by iteration over reduced brillouin zone
- double kxs[(numK+1)*3];
-	double kys[(numK+1)*3];
+ double kxs[numK*3];
+	double kys[numK*3];
 
-	for (int idx=0; idx<=numK; idx++) {
+	for (int idx=0; idx<numK; idx++) {
 		kxs[idx] = 4.0*pi/(3.0*ib*dx)*(idx*1.0/numK*1.0);
 		kys[idx] = 0;
-		kxs[idx+numK+1] = 4.0*pi/(3.0*ib*dx)*(1.0-(idx*1.0/numK*1.0)/4.0);
-		kys[idx+numK+1] = pi/(std::sqrt(3)*ib*dy)*idx/(1.0*numK);
-		kxs[idx+2*(numK+1)] = pi/(ib*dx)*(numK-idx)/(1.0*numK);
-		kys[idx+2*(numK+1)] = pi/(std::sqrt(3)*ib*dy)*(numK-idx)/(numK*1.0);
+		kxs[idx+numK] = 4.0*pi/(3.0*ib*dx)*(1.0-(idx*1.0/numK*1.0)/4.0);
+		kys[idx+numK] = pi/(std::sqrt(3)*ib*dy)*idx/(1.0*numK);
+		kxs[idx+2*numK] = pi/(ib*dx)*(numK-idx)/(1.0*numK);
+		kys[idx+2*numK] = pi/(std::sqrt(3)*ib*dy)*(numK-idx)/(numK*1.0);
 	}
 
-	for (int k=0; k < 3*(numK+1); k++) {
+	for (int k=0; k < 3*numK; k++) {
 		std::cout << "k=" << k << std::endl;
 
 		const int totaltime = std::pow(2,10+4);
