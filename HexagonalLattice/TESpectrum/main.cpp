@@ -37,23 +37,36 @@ double dt = courantfactor*dx/c;
 double dy = dx;
 
 // define grid boundaries and simulation parameters
-const int ib = 32;
-const int jb = 32;
+// jb = 54*sqrt(3)
+const int ib = 54;
+const int jb = 94;
+const int r0 = 15;
+
+// center points: middle, tl, bl, tr, br
+const int ic[] = {ib/2, 1, 1, ib, ib};
+const int jc[] = {jb/2, 1, jb, 1, jb};
+
+const int a1;
+const int a2;
+const int a3;
+const int a4;
+const int a5;
+const int a6;
 
 // initialize to complex value zero
 std::complex<double> Ez[ib+1][jb+1] = {std::complex<double>(0,0)};
 std::complex<double> Hy[ib+1][jb+1] = {std::complex<double>(0,0)};
 std::complex<double> Hx[ib+1][jb+1] = {std::complex<double>(0,0)};
 
-double eps[ib+1][ib+1];
-double mus[ib+1][ib+1];
+double eps[ib+1][jb+1];
+double mus[ib+1][jb+1];
 
 // index of refraction for n1 outside, n2 inside
 int n1 = 1;
 int n2 = 2;
 
 // setting brillouin zone and traversal
-const int numK = 50;
+const int numK = 10;
 const int tmp = std::pow(2,10+4);
 
 std::vector<std::vector<double>> bandstructure((1+numK)*3, std::vector<double>(tmp));
@@ -64,25 +77,25 @@ int main() {
 		for (int y=0;y<=jb;y++){
 			mus[x][y] = mu;
 			// normal/vacuum region outside (scattering obstacle)
-			if ( (x-ib/2)*(x-ib/2)+(y-ib/2)*(y-ib/2) <= (ib/4)*(ib/4) ) eps[x][y] = epsilon*n2*n2;
-			else eps[x][y] = epsilon*n1*n1;
+			for (int i = 0; i < 5; i++) {
+				if ( (x-ic[i])*(x-ic[i])+(y-jc[i])*(y-jc[i]) <= r0*r0 ) eps[x][y] = epsilon*n2*n2;
+				else eps[x][y] = epsilon*n1*n1;
+			}
 		}
 	}
-
 
 	// begin analysis by iteration over reduced brillouin zone
  double kxs[(numK+1)*3];
 	double kys[(numK+1)*3];
 
-	for (int idx=0; idx<numK+1; idx++) {
-		kxs[idx] = pi/(ib*dx)*idx/numK;
+	for (int idx=0; idx<=numK; idx++) {
+		kxs[idx] = 4.0*pi/(3.0*ib*dx)*(idx*1.0/numK*1.0);
 		kys[idx] = 0;
-		kxs[idx+numK+1] = pi/(ib*dx);
-		kys[idx+numK+1] = pi/(jb*dy)*idx/numK;
-		kxs[idx+2*(numK+1)] = pi/(ib*dx)*(numK-idx)/numK;
-		kys[idx+2*(numK+1)] = pi/(jb*dy)*(numK-idx)/numK;
+		kxs[idx+numK+1] = 4.0*pi/(3.0*ib*dx)*(1.0-(idx*1.0/numK*1.0)/4.0);
+		kys[idx+numK+1] = pi/(std::sqrt(3)*ib*dy)*idx/(1.0*numK);
+		kxs[idx+2*(numK+1)] = pi/(ib*dx)*(numK-idx)/(1.0*numK);
+		kys[idx+2*(numK+1)] = pi/(std::sqrt(3)*ib*dy)*(numK-idx)/(numK*1.0);
 	}
-
 
 	for (int k=0; k < 3*(numK+1); k++) {
 		std::cout << "k=" << k << std::endl;
@@ -112,7 +125,8 @@ int main() {
 			}
 
 			// source pulse from center
-			Ez[ib/2+5][jb/2+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ib/2+5][jb/2+5];
+			Ez[ic[0]+5][jc[0]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ic[0]+5][jc[0]+5];
+			Ez[ic[1]+5][jc[1]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100-kxs[k]*ib*dx/2-kys[k]*jb*dy/2))) + Ez[ic[1]+5][jc[1]+5];
 			// Hy, Hx
 			for (int x=0; x <= ib-1; x++) {
 				for (int y=0; y <= jb-1; y++) {
