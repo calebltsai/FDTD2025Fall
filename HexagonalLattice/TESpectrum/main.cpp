@@ -46,20 +46,17 @@ const int r0 = 15;
 const int ic[] = {ib/2, 1, 1, ib, ib};
 const int jc[] = {jb/2, 1, jb, 1, jb};
 
-const int a1 = 0;
-const int a2 = 0;
-const int a3 = 0;
-const int a4 = 0;
-const int a5 = 0;
-const int a6 = 0;
+// cylinder positions relative to center point
+// const int ia[] = {ib/4, -ib/4, };
+// const int ja[] = {0, 0, };
 
 // initialize to complex value zero
 std::complex<double> Ez[ib+1][jb+1] = {std::complex<double>(0,0)};
 std::complex<double> Hy[ib+1][jb+1] = {std::complex<double>(0,0)};
 std::complex<double> Hx[ib+1][jb+1] = {std::complex<double>(0,0)};
 
-double eps[ib+1][jb+1];
-double mus[ib+1][jb+1];
+std::vector<std::vector<double>> eps(ib+1, std::vector<double>(jb+1,epsilon));
+std::vector<std::vector<double>> mus(ib+1, std::vector<double>(jb+1,mu));
 
 // index of refraction for n1 outside, n2 inside
 int n1 = 1;
@@ -75,7 +72,7 @@ int main() {
 	// setting dielectrics and dimagnetics
 	for (int x=0;x<=ib;x++){
 		for (int y=0;y<=jb;y++){
-			mus[x][y] = mu;
+			// mus[x][y] = mu;
 			// normal/vacuum region outside (scattering obstacle)
 			for (int i = 0; i < 5; i++) {
 				if ( (x-ic[i])*(x-ic[i])+(y-jc[i])*(y-jc[i]) <= r0*r0 ) eps[x][y] = epsilon*n2*n2;
@@ -83,6 +80,7 @@ int main() {
 			}
 		}
 	}
+	// writeToFile(eps, "output/epsilons.csv");
 
 	// begin analysis by iteration over reduced brillouin zone
  double kxs[numK*3];
@@ -125,8 +123,8 @@ int main() {
 			}
 
 			// source pulse from center
-			Ez[ic[0]+5][jc[0]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ic[0]+5][jc[0]+5];
-			Ez[ic[1]+5][jc[1]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100-kxs[k]*ib*dx/2-kys[k]*jb*dy/2))) + Ez[ic[1]+5][jc[1]+5];
+			Ez[ic[0]+3][jc[0]+3] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ic[0]+3][jc[0]+3];
+			Ez[ic[1]+3][jc[1]+3] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100-kxs[k]*ib*dx/2-kys[k]*jb*dy/2))) + Ez[ic[1]+3][jc[1]+3];
 			// Hy, Hx
 			for (int x=0; x <= ib-1; x++) {
 				for (int y=0; y <= jb-1; y++) {
@@ -156,11 +154,11 @@ int main() {
 			// taking the norm of each pair of values in the array
 			temp.push_back(std::sqrt(transform.at(idx)*transform.at(idx)+transform.at(idx+1)*transform.at(idx+1)));
 		}
-
+	
 		bandstructure[k] = temp;
 	}
 
-	writeToFile(bandstructure);
+	writeToFile(bandstructure, "output/2DTESpectrum.csv");
 
 	return 0;
 }

@@ -83,8 +83,8 @@ write function to find peaks in each FFT, in the case youare not returning for p
 write a function that given reference to 2D array of doubles,
 writes to csv file for matlab in preparation for pcolor
 */
-void writeToFile(std::vector<std::vector<double>>& data) {
-	std::ofstream outFile("output/2DTESpectrum.csv");
+void writeToFile(std::vector<std::vector<double>>& data, std::string filename) {
+	std::ofstream outFile(filename);
 	if (outFile.is_open()) {
 		for (unsigned i=0; i < data.size();i++) {
 			for (unsigned j=0; j < data[0].size();j++) {
@@ -96,6 +96,6 @@ void writeToFile(std::vector<std::vector<double>>& data) {
 			outFile << std::endl;
 		}
 		outFile.close();
-		std::cout << "Sucessful write to file 2DTESpectrum.csv" << std::endl;
-	} else std::cout << "Error in opening file 2DTESpectrum.csv" << std::endl;
+		std::cout << "Sucessful write to file " << filename << std::endl;
+	} else std::cout << "Error in opening file "<< filename << std::endl;
 }

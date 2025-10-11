@@ -32,4 +32,4 @@ write function to find peaks in each FFT
 write a function that given reference to 2D array of doubles,
 writes to csv file for matlab in preparation for pcolor
 */
-void writeToFile(std::vector<std::vector<double>>& data);
+void writeToFile(std::vector<std::vector<double>>& data, std::string filename);
