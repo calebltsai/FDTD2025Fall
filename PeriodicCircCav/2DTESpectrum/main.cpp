@@ -76,7 +76,7 @@ int n2 = 2;
 const int numK = 50;
 const int tmp = std::pow(2,10+4);
 
-std::vector<std::vector<double>> bandstructure((1+numK)*3, std::vector<double>(tmp));
+std::vector<std::vector<double>> bandstructure(numK*3, std::vector<double>(tmp));
 
 int main() {   
 	// setting dielectrics and dimagnetics
@@ -93,10 +93,10 @@ int main() {
 	// begin analysis by iteration over reduced brillouin zone
 	// NEW HEXAGONAL brillouin zone
 
- double kxs[(numK+1)*3];
-	double kys[(numK+1)*3];
+ double kxs[numK*3];
+	double kys[numK*3];
 
-	for (int idx=0; idx<numK+1; idx++) {
+	for (int idx=0; idx<numK; idx++) {
 		kxs[idx] = pi/(ib*dx)*idx/numK;
 		kys[idx] = 0;
 		kxs[idx+numK+1] = pi/(ib*dx);
@@ -106,7 +106,7 @@ int main() {
 	}
 
 
-	for (int k=0; k < 3*(numK+1); k++) {
+	for (int k=0; k < 3*numK; k++) {
 		std::cout << "k=" << k << std::endl;
 
 		const int totaltime = std::pow(2,10+4);
