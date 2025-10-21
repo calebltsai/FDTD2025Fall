@@ -40,19 +40,13 @@ double dy = dx;
 // jb = 54*sqrt(3)
 const int ib = 54;
 const int jb = 94;
-const int r0 = 18;
+const int a0 = ib/3;
+const double arRatio[3] = {3.0, 2.83, 3.17};
 
 // center points: middle, tl, bl, tr, br
 const int ic[] = {ib/2, 1, 1, ib, ib};
 const int jc[] = {jb/2, 1, jb, 1, jb};
 
-<<<<<<< HEAD
-=======
-// cylinder positions relative to center point
-// const int ia[] = {ib/4, -ib/4, };
-// const int ja[] = {0, 0, };
-
->>>>>>> 489e6210a38d654f55a7e629f6ad7c835c18e869
 // initialize to complex value zero
 std::complex<double> Ez[ib+1][jb+1] = {std::complex<double>(0,0)};
 std::complex<double> Hy[ib+1][jb+1] = {std::complex<double>(0,0)};
@@ -75,12 +69,12 @@ int main() {
 	// geometry of the cylindrical dielectrics with respect to a center (0,0)
 	double increment = 2.0*pi/6.0;
 	int a[6][2] = {
-		{static_cast<int>(std::round(r0*std::cos(increment*0.5))), static_cast<int>(r0*std::round(std::sin(increment*0.5)))},
-		{static_cast<int>(std::round(r0*std::cos(increment*1.5))), static_cast<int>(r0*std::round(std::sin(increment*1.5)))},
-		{static_cast<int>(std::round(r0*std::cos(increment*2.5))), static_cast<int>(r0*std::round(std::sin(increment*2.5)))},
-		{static_cast<int>(std::round(r0*std::cos(increment*3.5))), static_cast<int>(r0*std::round(std::sin(increment*3.5)))},
-		{static_cast<int>(std::round(r0*std::cos(increment*4.5))), static_cast<int>(r0*std::round(std::sin(increment*4.5)))},
-		{static_cast<int>(std::round(r0*std::cos(increment*5.5))), static_cast<int>(r0*std::round(std::sin(increment*5.5)))}
+		{static_cast<int>(std::round(a0*std::cos(increment*0.0))), static_cast<int>(std::round(a0*std::sin(increment*0.0)))},
+		{static_cast<int>(std::round(a0*std::cos(increment*1.0))), static_cast<int>(std::round(a0*std::sin(increment*1.0)))},
+		{static_cast<int>(std::round(a0*std::cos(increment*2.0))), static_cast<int>(std::round(a0*std::sin(increment*2.0)))},
+		{static_cast<int>(std::round(a0*std::cos(increment*3.0))), static_cast<int>(std::round(a0*std::sin(increment*3.0)))},
+		{static_cast<int>(std::round(a0*std::cos(increment*4.0))), static_cast<int>(std::round(a0*std::sin(increment*4.0)))},
+		{static_cast<int>(std::round(a0*std::cos(increment*5.0))), static_cast<int>(std::round(a0*std::sin(increment*5.0)))}
 	};
 
 	// setting dielectrics and dimagnetics
@@ -90,18 +84,12 @@ int main() {
 			// normal/vacuum region outside (scattering obstacle)
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 6; j++) {
-					if ( (x-(ic[i]+a[j][0]))*(x-(ic[i]+a[j][0]))+(y-(jc[i]+a[j][1]))*(y-(jc[i]+a[j][1])) <= r0*r0 ) eps[x][y] = epsilon*n2*n2;
-					else eps[x][y] = epsilon*n1*n1;
+					if ( ((ic[i]+a[j][0])-x)*((ic[i]+a[j][0])-x)+((jc[i]+a[j][1])-y)*((jc[i]+a[j][1])-y) < a0*a0/(arRatio[0]*arRatio[0]) ) eps[x][y] = epsilon*n2*n2;
 				}
 			}
 		}
 	}
-<<<<<<< HEAD
-	
-	return 0;
-=======
-	// writeToFile(eps, "output/epsilons.csv");
->>>>>>> 489e6210a38d654f55a7e629f6ad7c835c18e869
+	writeToFile(eps, "output/dielectrics.csv");
 
 	// begin analysis by iteration over reduced brillouin zone
  double kxs[numK*3];
@@ -180,6 +168,5 @@ int main() {
 	}
 
 	writeToFile(bandstructure, "output/2DTESpectrum.csv");
-
 	return 0;
 }
