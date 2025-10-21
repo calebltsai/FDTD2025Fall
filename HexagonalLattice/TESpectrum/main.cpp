@@ -40,18 +40,11 @@ double dy = dx;
 // jb = 54*sqrt(3)
 const int ib = 54;
 const int jb = 94;
-const int r0 = 15;
+const int r0 = 18;
 
 // center points: middle, tl, bl, tr, br
 const int ic[] = {ib/2, 1, 1, ib, ib};
 const int jc[] = {jb/2, 1, jb, 1, jb};
-
-const int a1 = 0;
-const int a2 = 0;
-const int a3 = 0;
-const int a4 = 0;
-const int a5 = 0;
-const int a6 = 0;
 
 // initialize to complex value zero
 std::complex<double> Ez[ib+1][jb+1] = {std::complex<double>(0,0)};
@@ -71,18 +64,33 @@ const int tmp = std::pow(2,10+4);
 
 std::vector<std::vector<double>> bandstructure(numK*3, std::vector<double>(tmp));
 
-int main() {   
+int main() {
+	// geometry of the cylindrical dielectrics with respect to a center (0,0)
+	double increment = 2.0*pi/6.0;
+	int a[6][2] = {
+		{static_cast<int>(std::round(r0*std::cos(increment*0.5))), static_cast<int>(r0*std::round(std::sin(increment*0.5)))},
+		{static_cast<int>(std::round(r0*std::cos(increment*1.5))), static_cast<int>(r0*std::round(std::sin(increment*1.5)))},
+		{static_cast<int>(std::round(r0*std::cos(increment*2.5))), static_cast<int>(r0*std::round(std::sin(increment*2.5)))},
+		{static_cast<int>(std::round(r0*std::cos(increment*3.5))), static_cast<int>(r0*std::round(std::sin(increment*3.5)))},
+		{static_cast<int>(std::round(r0*std::cos(increment*4.5))), static_cast<int>(r0*std::round(std::sin(increment*4.5)))},
+		{static_cast<int>(std::round(r0*std::cos(increment*5.5))), static_cast<int>(r0*std::round(std::sin(increment*5.5)))}
+	};
+
 	// setting dielectrics and dimagnetics
 	for (int x=0;x<=ib;x++){
 		for (int y=0;y<=jb;y++){
 			mus[x][y] = mu;
 			// normal/vacuum region outside (scattering obstacle)
 			for (int i = 0; i < 5; i++) {
-				if ( (x-ic[i])*(x-ic[i])+(y-jc[i])*(y-jc[i]) <= r0*r0 ) eps[x][y] = epsilon*n2*n2;
-				else eps[x][y] = epsilon*n1*n1;
+				for (int j = 0; j < 6; j++) {
+					if ( (x-(ic[i]+a[j][0]))*(x-(ic[i]+a[j][0]))+(y-(jc[i]+a[j][1]))*(y-(jc[i]+a[j][1])) <= r0*r0 ) eps[x][y] = epsilon*n2*n2;
+					else eps[x][y] = epsilon*n1*n1;
+				}
 			}
 		}
 	}
+	
+	return 0;
 
 	// begin analysis by iteration over reduced brillouin zone
  double kxs[numK*3];
