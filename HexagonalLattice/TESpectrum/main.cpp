@@ -125,8 +125,8 @@ int main() {
 			}
 
 			// source pulse from center
-			Ez[ic[0]+5][jc[0]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ic[0]+5][jc[0]+5];
-			Ez[ic[1]+5][jc[1]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100-kxs[k]*ib*dx/2-kys[k]*jb*dy/2))) + Ez[ic[1]+5][jc[1]+5];
+			Ez[ic[0]+3][jc[0]+3] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ic[0]+3][jc[0]+3];
+			Ez[ic[1]+3][jc[1]+3] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100-kxs[k]*ib*dx/2-kys[k]*jb*dy/2))) + Ez[ic[1]+3][jc[1]+3];
 			// Hy, Hx
 			for (int x=0; x <= ib-1; x++) {
 				for (int y=0; y <= jb-1; y++) {
