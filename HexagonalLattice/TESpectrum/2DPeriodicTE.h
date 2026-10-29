@@ -23,7 +23,8 @@ void four1(std::vector<double>& data, const int n, const int isign);
 
 
 /*
-write function to find peaks in each FFT 
+write function to find first n peaks in each FFT 1D spectrum
+returns vector of numK size elements are index of peak in inverse time (frequency) units
 */
 
 

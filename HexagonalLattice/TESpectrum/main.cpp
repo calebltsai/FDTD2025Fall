@@ -40,7 +40,7 @@ double dy = dx;
 // jb = 54*sqrt(3)
 const int ib = 54;
 const int jb = 94;
-const int a0 = ib/3;
+const int a0 = ib;
 const double arRatio[3] = {3.0, 2.83, 3.17};
 
 // center points: middle, tl, bl, tr, br
@@ -56,25 +56,26 @@ std::vector<std::vector<double>> eps(ib+1, std::vector<double>(jb+1,epsilon));
 std::vector<std::vector<double>> mus(ib+1, std::vector<double>(jb+1,mu));
 
 // index of refraction for n1 outside, n2 inside
-int n1 = 1;
-int n2 = 2;
+double n1 = 1.0;
+double n2 = std::sqrt(11.7);
 
 // setting brillouin zone and traversal
 const int numK = 40;
 const int tmp = std::pow(2,10+4);
 
-std::vector<std::vector<double>> bandstructure(numK*3, std::vector<double>(tmp));
+std::vector<std::vector<double>> bandstructure(numK*2, std::vector<double>(tmp));
 
 int main() {
 	// geometry of the cylindrical dielectrics with respect to a center (0,0)
 	double increment = 2.0*pi/6.0;
+	double tempRad = a0/arRatio[0];
 	int a[6][2] = {
-		{static_cast<int>(std::round(a0*std::cos(increment*0.0))), static_cast<int>(std::round(a0*std::sin(increment*0.0)))},
-		{static_cast<int>(std::round(a0*std::cos(increment*1.0))), static_cast<int>(std::round(a0*std::sin(increment*1.0)))},
-		{static_cast<int>(std::round(a0*std::cos(increment*2.0))), static_cast<int>(std::round(a0*std::sin(increment*2.0)))},
-		{static_cast<int>(std::round(a0*std::cos(increment*3.0))), static_cast<int>(std::round(a0*std::sin(increment*3.0)))},
-		{static_cast<int>(std::round(a0*std::cos(increment*4.0))), static_cast<int>(std::round(a0*std::sin(increment*4.0)))},
-		{static_cast<int>(std::round(a0*std::cos(increment*5.0))), static_cast<int>(std::round(a0*std::sin(increment*5.0)))}
+		{static_cast<int>(std::round(tempRad*std::cos(increment*0.0))), static_cast<int>(std::round(tempRad*std::sin(increment*0.0)))},
+		{static_cast<int>(std::round(tempRad*std::cos(increment*1.0))), static_cast<int>(std::round(tempRad*std::sin(increment*1.0)))},
+		{static_cast<int>(std::round(tempRad*std::cos(increment*2.0))), static_cast<int>(std::round(tempRad*std::sin(increment*2.0)))},
+		{static_cast<int>(std::round(tempRad*std::cos(increment*3.0))), static_cast<int>(std::round(tempRad*std::sin(increment*3.0)))},
+		{static_cast<int>(std::round(tempRad*std::cos(increment*4.0))), static_cast<int>(std::round(tempRad*std::sin(increment*4.0)))},
+		{static_cast<int>(std::round(tempRad*std::cos(increment*5.0))), static_cast<int>(std::round(tempRad*std::sin(increment*5.0)))}
 	};
 
 	// setting dielectrics and dimagnetics
@@ -84,7 +85,7 @@ int main() {
 			// normal/vacuum region outside (scattering obstacle)
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 6; j++) {
-					if ( ((ic[i]+a[j][0])-x)*((ic[i]+a[j][0])-x)+((jc[i]+a[j][1])-y)*((jc[i]+a[j][1])-y) < a0*a0/(arRatio[0]*arRatio[0]) ) eps[x][y] = epsilon*n2*n2;
+					if ( ((ic[i]+a[j][0])-x)*((ic[i]+a[j][0])-x)+((jc[i]+a[j][1])-y)*((jc[i]+a[j][1])-y) < a0*a0/(9*9) ) eps[x][y] = epsilon*n2*n2;
 				}
 			}
 		}
@@ -92,22 +93,24 @@ int main() {
 	writeToFile(eps, "output/dielectrics.csv");
 
 	// begin analysis by iteration over reduced brillouin zone
- double kxs[numK*3];
-	double kys[numK*3];
+ double kxs[numK*2];
+	double kys[numK*2];
 
 	for (int idx=0; idx<numK; idx++) {
-		kxs[idx] = 4.0*pi/(3.0*ib*dx)*(idx*1.0/numK*1.0);
-		kys[idx] = 0;
-		kxs[idx+numK] = 4.0*pi/(3.0*ib*dx)*(1.0-(idx*1.0/numK*1.0)/4.0);
-		kys[idx+numK] = pi/(std::sqrt(3)*ib*dy)*idx/(1.0*numK);
-		kxs[idx+2*numK] = pi/(ib*dx)*(numK-idx)/(1.0*numK);
-		kys[idx+2*numK] = pi/(std::sqrt(3)*ib*dy)*(numK-idx)/(numK*1.0);
+		kxs[idx] = 3*pi/(2*ib*dx)*(numK-1-idx)/numK; // m to gamma
+		kys[idx] = std::sqrt(3)/2*pi/(ib*dy)*(numK-1-idx)/numK;
+		kxs[idx+numK] = 2.0*pi/(ib*dx)*((idx+1)*1.0/numK); // gamma to k
+		kys[idx+numK] = 0.0;
 	}
 
-	for (int k=0; k < 3*numK; k++) {
+	// for (int idx = 0; idx<numK*2;idx++) {
+	// 	std::cout << "kx: \t" << kxs[idx] << "\nky: \t" << kys[idx] << std::endl;
+	// }
+	const int totaltime = std::pow(2,10+4);
+
+	for (int k=0; k < 2*numK; k++) {
 		std::cout << "k=" << k << std::endl;
 
-		const int totaltime = std::pow(2,10+4);
 		std::vector<std::complex<double>> eobs(totaltime);
 
 		std::complex<double> Hz[ib+1][jb+1] = {std::complex<double>(0,0)};
@@ -132,8 +135,8 @@ int main() {
 			}
 
 			// source pulse from center
-			Ez[ic[0]+3][jc[0]+3] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100))) + Ez[ic[0]+3][jc[0]+3];
-			Ez[ic[1]+3][jc[1]+3] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega*dt*(t-100-kxs[k]*ib*dx/2-kys[k]*jb*dy/2))) + Ez[ic[1]+3][jc[1]+3];
+			Ez[ic[0]+5][jc[0]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega/40.0*dt*(t-100))) + Ez[ic[0]+5][jc[0]+5];
+			Ez[ic[1]+5][jc[1]+5] = std::exp(-std::pow((t-100),2)/std::pow(20,2)/10)*std::exp(std::complex<double>(0,omega/40.0*dt*(t-100-kxs[k]*ib*dx/2-kys[k]*jb*dy/2))) + Ez[ic[1]+5][jc[1]+5];
 			// Hy, Hx
 			for (int x=0; x <= ib-1; x++) {
 				for (int y=0; y <= jb-1; y++) {
@@ -168,5 +171,10 @@ int main() {
 	}
 
 	writeToFile(bandstructure, "output/2DTESpectrum.csv");
+	std::cout << "center frequency: " << freq << std::endl;
+	std::cout << "frequency scaling 1/dt: " << 1/dt << std::endl;
+	std::cout << "frequency scaling 1/TotalTime: " << 1/(totaltime*dt) << std::endl;
+	std::cout << "bandstructure from K to Gamma to M" << std::endl;
+
 	return 0;
 }
